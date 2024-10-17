@@ -1,1 +1,1 @@
-# vtb-hack-back
+pip install Flask Flask-SQLAlchemy psycopg2-binary passlib
