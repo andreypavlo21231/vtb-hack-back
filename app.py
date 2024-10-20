@@ -28,6 +28,9 @@ app.config['UPLOAD_FOLDER_WORKER'] = UPLOAD_FOLDER_WORKER
 app.config['UPLOAD_FOLDER_EMPLOYER'] = UPLOAD_FOLDER_EMPLOYER
 app.config['UPLOAD_FOLDER_COURSES'] = UPLOAD_FOLDER_COURSES
 app.config['UPLOAD_FOLDER_CERTIFICATES'] = UPLOAD_FOLDER_CERTIFICATES
+app.config['account_address'] = '0x709F89aD46fe4e20EA1262404Db64A717C7E251B'
+app.config['private_key'] = '8797cbf9a2fb0a15d14ec0faa39054e13dc0878384f5794f03e2fff27198e120'
+
 def mint_nft_func(to_address, token_uri):
     infura_url = 'https://sepolia.infura.io/v3/87e9026055e542ff8a8c95b18576746c'
     web3 = Web3(Web3.HTTPProvider(infura_url))
@@ -40,8 +43,8 @@ def mint_nft_func(to_address, token_uri):
         abi = json.load(abi_file)['abi']
     contract = web3.eth.contract(address=contract_address, abi=abi)
 
-    account_address = '0x709F89aD46fe4e20EA1262404Db64A717C7E251B'
-    private_key = '8797cbf9a2fb0a15d14ec0faa39054e13dc0878384f5794f03e2fff27198e120'
+    account_address = app.config['private_key']
+    private_key = app.config['private_key']
 
     nonce = web3.eth.get_transaction_count(account_address)
     
@@ -64,25 +67,10 @@ def Send_data_to_blockchain(data_to_store):
     if not web3.is_connected():
         raise Exception("Не удалось подключиться к сети Ethereum")
 
-    #Вот эту хуйню нужно как-то прятать, это пиздец это в коде хранить, если время будет - сделай
-    account = '0x709F89aD46fe4e20EA1262404Db64A717C7E251B'
-    private_key = '8797cbf9a2fb0a15d14ec0faa39054e13dc0878384f5794f03e2fff27198e120'
+    account = app.config['private_key']
+    private_key = app.config['private_key']
     
     data_json = json.dumps(data_to_store)
-#//todo сделать шифрование данных ша256
-    # with open("public_key.pem", "rb") as key_file:
-        # public_key = serialization.load_pem_public_key(
-            # key_file.read(),
-            # backend=default_backend()
-        # )
-    # encrypted_data = public_key.encrypt(
-        # data_json.encode('utf-8'),  
-        # padding.OAEP(
-            # mgf=padding.MGF1(algorithm=hashes.SHA256()),
-            # algorithm=hashes.SHA256(),
-            # label=None
-        # )
-    # )
 
     nonce = web3.eth.get_transaction_count(account)
     transaction = {
@@ -111,22 +99,7 @@ def Read_data_from_blockchain(tx_hash):
     tx = web3.eth.get_transaction(tx_hash)
 
     stored_data = web3.to_text(tx['input'])
-    # with open("private_key.pem", "rb") as key_file:
-        # private_key = serialization.load_pem_private_key(
-            # key_file.read(),
-            # password=None,
-            # backend=default_backend()
-        # )
-    # decrypted_data = private_key.decrypt(
-    # stored_data,
-    # padding.OAEP(
-        # mgf=padding.MGF1(algorithm=hashes.SHA256()),
-        # algorithm=hashes.SHA256(),
-        # label=None
-    # )
-    # )
-    # data_json = decrypted_data.decode('utf-8')
-    # data_to_store = json.loads(data_json)
+
     return stored_data
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
